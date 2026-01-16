@@ -1,0 +1,1331 @@
+/* style.css - FINAL VERSION (Full Features) */
+
+:root {
+  /* --- BẢNG MÀU --- */
+  --primary-color: #2c3e50; /* Màu chữ chính (Xanh đen) */
+  --text-color: #333333; /* Màu chữ nội dung */
+  --accent-color: #e74c3c; /* Màu nhấn (Đỏ) - dùng cho hover, nút, tổ trưởng */
+  --bg-cream: #ffffff; /* Màu nền Kem chủ đạo */
+  --card-bg: #ffffff; /* Màu nền thẻ thành viên (Trắng) */
+
+  /* --- KÍCH THƯỚC --- */
+  --nav-height: 60px;
+  --card-ratio: 828 / 1289; /* Tỉ lệ khung ảnh */
+  --card-width: 320px; /* Chiều rộng cố định của thẻ */
+}
+
+/* --- 1. CẤU HÌNH CHUNG (GLOBAL) --- */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Trong file style.css */
+
+body {
+  background-color: linear-gradient(135deg, #8ec5fc 0%, #e0c3fc 100%);
+  color: var(--text-color);
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+
+  /* --- THÊM 2 DÒNG NÀY ĐỂ CHỐNG BÔI ĐEN/TÔ XANH --- */
+  -webkit-user-select: none; /* Cho trình duyệt Chrome/Safari */
+  user-select: none; /* Cho trình duyệt chuẩn */
+}
+
+/* Kỹ thuật Hack: Khi đang mở ảnh (checkbox checked) -> Khóa cuộn trang */
+body:has(.zoom-trigger:checked) {
+  overflow: hidden;
+}
+
+/* --- 2. TRANG TRÍ THANH CUỘN (SCROLLBAR) --- */
+/* Chiều rộng thanh cuộn */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Nền của rãnh cuộn */
+::-webkit-scrollbar-track {
+  background: #eee;
+}
+
+/* Thanh kéo (Thumb) */
+::-webkit-scrollbar-thumb {
+  background: #bdc3c7; /* Màu xám nhạt */
+  border-radius: 4px;
+}
+
+/* Hiệu ứng khi di chuột vào thanh kéo */
+::-webkit-scrollbar-thumb:hover {
+  background: #767676; /* Đổi sang màu đỏ cam */
+}
+
+/* --- 3. NAVIGATION BAR --- */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100; /* Thấp hơn Lightbox */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5%;
+  height: var(--nav-height);
+
+  /* Hiệu ứng kính mờ nền trắng */
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+
+  /* Hiệu ứng ẩn hiện mượt mà */
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+/* Tự động ẩn Navbar khi đang xem ảnh phóng to */
+body:has(.zoom-trigger:checked) .navbar {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nav-brand {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  width: 20%;
+}
+
+.nav-center-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- NAV LINKS & HIỆU ỨNG GẠCH CHÂN --- */
+.nav-links {
+  display: flex;
+  gap: 30px;
+  width: 20%;
+  justify-content: flex-end;
+  font-size: 0.9rem;
+}
+
+.nav-links li a {
+  color: #555;
+  text-decoration: none;
+  position: relative;
+  padding-bottom: 5px;
+  transition: color 0.3s ease;
+  font-weight: 500;
+}
+
+/* Vẽ đường kẻ ẩn */
+.nav-links li a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0%;
+  height: 2px;
+  background-color: var(--accent-color);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+/* Hover: Chữ đổi màu + Đường kẻ chạy ra 2 bên */
+.nav-links li a:hover {
+  color: var(--accent-color);
+}
+.nav-links li a:hover::after {
+  width: 100%;
+}
+
+/* Active: Giữ nguyên trạng thái kích hoạt */
+.nav-links li a.active {
+  color: var(--accent-color);
+}
+.nav-links li a.active::after {
+  width: 100%;
+}
+
+/* --- 3. HERO SECTION (GALLERY 3 ẢNH - KÍCH THƯỚC CHUẨN 45%) --- */
+.hero-wrapper {
+  position: relative;
+  width: 100%;
+  height: 90vh;
+  background-color: transparent;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px;
+}
+
+.gallery-container {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  height: 100%;
+  pointer-events: auto;
+}
+
+/* Style chung cho khung ảnh nhỏ */
+.gallery-card {
+  position: absolute;
+
+  /* THAY ĐỔI: Giảm từ 55% xuống 45% (Vừa vặn hơn) */
+  width: 45%;
+
+  cursor: pointer;
+  transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --base-rotate: 0deg;
+  filter: brightness(1) blur(0px);
+  opacity: 1;
+}
+
+.gallery-card img {
+  width: 100%;
+  height: auto;
+  border: 10px solid #fff;
+  border-radius: 4px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  display: block;
+  transition: all 0.6s ease;
+}
+
+/* --- VỊ TRÍ & ANIMATION (Đã gom gọn lại vào giữa) --- */
+
+/* Ảnh 1: Trái Trên */
+.img-1 {
+  top: 12%;
+  left: 8%; /* Đẩy vào trong một chút */
+  z-index: 2;
+  --base-rotate: -6deg;
+  animation: gentleFloat 14s ease-in-out infinite alternate;
+}
+
+/* Ảnh 2: Phải Giữa */
+.img-2 {
+  top: 5%;
+  right: 8%; /* Đẩy vào trong một chút */
+  z-index: 3;
+  --base-rotate: 6deg;
+  animation: gentleFloat 18s ease-in-out infinite alternate-reverse;
+}
+
+/* Ảnh 3: Dưới Cùng */
+.img-3 {
+  bottom: 1%;
+  left: 35%; /* Căn giữa hơn */
+  z-index: 1;
+  --base-rotate: -3deg;
+  animation: gentleFloat 16s ease-in-out infinite alternate;
+}
+
+@keyframes gentleFloat {
+  0% {
+    transform: translate(0, 0) rotate(var(--base-rotate));
+  }
+  100% {
+    transform: translate(20px, 15px) rotate(calc(var(--base-rotate) + 2deg));
+  }
+}
+
+/* --- TƯƠNG TÁC FOCUS & BLUR (Giữ nguyên) --- */
+.gallery-container:has(.gallery-card:hover) .gallery-card {
+  animation-play-state: paused;
+}
+
+.gallery-card:hover {
+  transform: scale(1.05) rotate(var(--base-rotate)) !important;
+  filter: brightness(1.1);
+  z-index: 10;
+}
+.gallery-card:hover img {
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+}
+
+.gallery-container:has(.gallery-card:hover) .gallery-card:not(:hover) {
+  transform: scale(0.95) rotate(var(--base-rotate)) !important;
+  filter: brightness(0.85) blur(1px);
+  opacity: 0.9;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* --- 4. LOGIC LIGHTBOX GALLERY & NEXT/PREV (BẢN SIÊU MỎNG) --- */
+
+/* Ẩn các nút radio input */
+.gallery-input {
+  display: none;
+}
+
+/* Mặc định ẩn Lightbox */
+.gallery-lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* TÌM ĐOẠN NÀY VÀ THAY THẾ/BỔ SUNG BẰNG ĐOẠN DƯỚI ĐÂY */
+
+/* Kích hoạt Lightbox cho cả 6 ảnh */
+#gal-1:checked ~ .gallery-lightbox,
+#gal-2:checked ~ .gallery-lightbox,
+#gal-3:checked ~ .gallery-lightbox,
+#gal-4:checked ~ .gallery-lightbox, /* Thêm mới */
+#gal-5:checked ~ .gallery-lightbox, /* Thêm mới */
+#gal-6:checked ~ .gallery-lightbox  /* Thêm mới */ {
+  display: flex;
+  opacity: 1;
+}
+
+/* Hiển thị từng slide tương ứng */
+#gal-4:checked ~ .gallery-lightbox .slide-4 {
+  display: flex;
+  animation: fadeIn 0.4s;
+}
+#gal-5:checked ~ .gallery-lightbox .slide-5 {
+  display: flex;
+  animation: fadeIn 0.4s;
+}
+#gal-6:checked ~ .gallery-lightbox .slide-6 {
+  display: flex;
+  animation: fadeIn 0.4s;
+}
+
+.lightbox-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gal-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+#gal-1:checked ~ .gallery-lightbox .slide-1 {
+  display: flex;
+  animation: fadeIn 0.4s;
+}
+#gal-2:checked ~ .gallery-lightbox .slide-2 {
+  display: flex;
+  animation: fadeIn 0.4s;
+}
+#gal-3:checked ~ .gallery-lightbox .slide-3 {
+  display: flex;
+  animation: fadeIn 0.4s;
+}
+
+.gal-slide img {
+  max-height: 100vh;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+}
+
+/* --- NÚT NEXT / PREV (VẼ BẰNG CSS ĐỂ SIÊU MỎNG) --- */
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+
+  /* Tạo vùng bấm rộng 50px cho dễ bấm trên điện thoại */
+  width: 50px;
+  height: 50px;
+
+  /* Ẩn ký tự mũi tên cũ đi */
+  font-size: 0;
+  color: transparent;
+
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+/* Vẽ mũi tên bằng Pseudo-element (::after) */
+.nav-btn::after {
+  content: "";
+  display: block;
+  width: 20px; /* Kích thước mũi tên nhỏ lại */
+  height: 20px;
+
+  /* Tạo 2 cạnh của hình vuông */
+  border-top: 1px solid rgba(255, 255, 255, 0.6); /* Độ dày 1px (Mỏng) */
+  border-right: 1px solid rgba(255, 255, 255, 0.6);
+
+  transition: all 0.3s ease;
+}
+
+/* Xoay hình vuông để tạo thành mũi tên */
+.prev {
+  left: 15px;
+}
+.prev::after {
+  transform: rotate(-135deg); /* Xoay ngược thành mũi tên trái */
+  margin-left: 5px; /* Căn chỉnh lại chút cho cân */
+}
+
+.next {
+  right: 15px;
+}
+.next::after {
+  transform: rotate(45deg); /* Xoay thành mũi tên phải */
+  margin-right: 5px;
+}
+
+/* Hover: Sáng lên và to hơn chút */
+.nav-btn:hover::after {
+  border-color: #fff;
+  width: 25px;
+  height: 25px;
+}
+
+/* --- NÚT ĐÓNG (CLOSE) --- */
+.gal-close-btn {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  z-index: 10001;
+  width: 40px;
+  height: 40px; /* Nhỏ gọn hơn (40px) */
+  cursor: pointer;
+
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5); /* Viền mỏng 1px */
+  color: rgba(255, 255, 255, 0.8);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 24px; /* Chữ X nhỏ lại */
+  font-weight: 100; /* Nét siêu mảnh */
+  line-height: 1;
+  padding-bottom: 1px;
+
+  transition: all 0.3s ease;
+}
+
+.gal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+  color: #fff;
+  transform: scale(1.05); /* Chỉ nổi nhẹ, không xoay */
+}
+
+.gal-overlay-close {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  cursor: default;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery-card {
+    width: 70%;
+    border-width: 6px;
+  }
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+  .nav-btn::after {
+    width: 15px;
+    height: 15px;
+  } /* Mũi tên nhỏ hơn trên đt */
+  .gal-close-btn {
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+  }
+}
+
+/* --- 5. LAYOUT CONTENT --- */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px 100px 20px;
+  position: relative;
+  top: -30px; /* Đẩy nhẹ lên đè vào phần mờ của ảnh một chút */
+  z-index: 10;
+}
+
+.section-title {
+  text-align: center;
+  margin: 50px 0 40px;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+
+/* --- 6. CARD THÀNH VIÊN --- */
+.card-wrapper {
+  width: 100%;
+  max-width: var(--card-width); /* Cố định chiều rộng 320px */
+  margin: 0 auto;
+  position: relative;
+}
+
+.leader-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 80px;
+}
+
+.members-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 60px;
+  justify-items: center;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .members-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+  }
+}
+@media (max-width: 600px) {
+  .members-grid {
+    grid-template-columns: 1fr;
+  }
+  .nav-center-title {
+    display: none;
+  }
+}
+
+.member-card {
+  display: block;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.member-card:hover {
+  transform: translateY(-10px);
+}
+
+.image-frame {
+  width: 100%;
+  aspect-ratio: var(--card-ratio);
+  border-radius: 12px;
+  overflow: hidden;
+  /* Bóng đổ nhẹ */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--card-bg);
+}
+
+.image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.member-info {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: white;
+  margin-bottom: 8px;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.badge.leader {
+  background-color: var(--accent-color);
+}
+.badge.member {
+  background-color: #3498db;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+}
+
+/* --- 7. LIGHTBOX (PHÓNG TO) & ANIMATION --- */
+.zoom-trigger {
+  display: none;
+}
+
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  /* Nền tối đậm để làm nổi bật ảnh */
+  background: rgba(0, 0, 0, 0.92);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.zoom-trigger:checked + .lightbox-overlay {
+  display: flex;
+  opacity: 1;
+}
+
+/* Cấu hình ảnh khi phóng to */
+.lightbox-content {
+  max-width: 100vw; /* Rộng tối đa 100% màn hình */
+  max-height: 100vh; /* Cao tối đa 100% màn hình */
+  object-fit: contain; /* Đảm bảo thấy hết ảnh */
+  border-radius: 0;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
+
+  /* Animation: Phóng từ tâm ra mượt mà */
+  animation: smoothZoom 0.4s ease-out;
+}
+
+@keyframes smoothZoom {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.close-area {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: default;
+}
+
+/* --- 8. NÚT ĐÓNG (CLOSE BUTTON) --- */
+.close-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000; /* Cao nhất */
+
+  /* Hình vuông trong suốt */
+  width: 45px;
+  height: 45px;
+  background-color: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+
+  /* Căn giữa chữ X */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Font chữ */
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 28px;
+  line-height: 1;
+  padding-top: 2px; /* Tinh chỉnh nhỏ để X nằm chính giữa */
+
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Hiệu ứng khi di chuột vào nút X */
+.close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #fff;
+  transform: scale(1.05);
+}
+
+/* Mobile responsive cho nút X */
+@media (max-width: 480px) {
+  .close-btn {
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+}
+
+/* --- MOBILE RESPONSIVE FIX --- */
+@media screen and (max-width: 768px) {
+  /* 1. PHẦN HOME (HERO) - Chụm ảnh & Xóa khoảng trắng */
+  .hero-wrapper {
+    height: 45vh; /* Giảm chiều cao để hết khoảng trắng thừa */
+    min-height: unset;
+  }
+
+  .gallery-container {
+    width: 100%;
+    overflow: visible;
+  }
+
+  .gallery-card {
+    width: 55%; /* Kích thước ảnh vừa đủ để xếp chồng đẹp */
+    position: absolute;
+  }
+
+  /* Tinh chỉnh vị trí để giống bố cục máy tính */
+  .img-1 {
+    top: 10%;
+    left: 2%;
+    transform: rotate(-6deg);
+  }
+
+  .img-2 {
+    top: 20%;
+    right: 2%;
+    transform: rotate(6deg);
+  }
+
+  .img-3 {
+    /* top: auto; */
+    bottom: 5%;
+    left: 30%;
+    transform: translateX(-50%) rotate(-3deg); /* Căn giữa chuẩn */
+  }
+
+  /* 2. PHẦN THÀNH VIÊN (MEMBERS) - 3 Cột 1 Hàng */
+  .members-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 4px; /* Khoảng cách giữa các thẻ rất nhỏ */
+    padding: 0 5px;
+  }
+
+  .card-wrapper {
+    /* Chia 3 cột: 33% nhưng trừ đi khoảng hở an toàn -> để 32% */
+    width: 32% !important;
+    flex: 0 0 32% !important;
+    margin: 0 !important;
+    margin-bottom: 15px !important;
+  }
+
+  .member-card {
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 5px !important; /* Giảm padding trong thẻ */
+  }
+
+  .image-frame {
+    height: 100px; /* Cố định chiều cao ảnh cho đều */
+    margin-bottom: 5px;
+  }
+
+  .image-frame img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Thu nhỏ chữ tối đa để không bị vỡ khung */
+  .member-info .name {
+    font-size: 0.6rem !important; /* Tên bé lại */
+    line-height: 1.2;
+    margin: 2px 0;
+  }
+
+  .member-info .badge {
+    font-size: 0.5rem !important; /* Chữ chức vụ bé xíu */
+    padding: 2px 4px;
+  }
+
+  /* Chữ hiệu ứng click nhỏ lại */
+  .click-wish-text {
+    font-size: 0.9rem;
+  }
+}
+
+/* --- HIỆU ỨNG TUYẾT RƠI (CANVAS) --- */
+#pinkSnowCanvas {
+  position: fixed; /* Cố định để nó luôn phủ kín màn hình khi cuộn */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Đảm bảo nó nằm trên cùng về mặt thị giác */
+  pointer-events: none; /* QUAN TRỌNG: Giúp chuột bấm xuyên qua canvas để tương tác với web bên dưới */
+}
+
+/* --- HIỆU ỨNG CÂU CHÚC KHI CLICK (ĐÃ CHỈNH SỬA) --- */
+
+/* Trong file style.css */
+
+/* Trong file style.css */
+
+.click-wish-text {
+  position: fixed;
+  pointer-events: none;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: bold; /* Giữ đậm vừa phải */
+  font-size: 1.1rem;
+  white-space: nowrap;
+  z-index: 100000;
+
+  /* ĐÃ XÓA VIỀN ĐEN DÀY */
+  /* Chỉ để lại bóng mờ nhẹ xíu để chữ tách biệt với nền */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+  /* Animation: Bay lên trong 1.5 giây (Đủ để thấy mờ dần) */
+  animation: floatUpSmooth 1.5s ease-out forwards;
+}
+
+/* Định nghĩa lại chuyển động: Mờ dần rõ ràng hơn */
+@keyframes floatUpSmooth {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1; /* Rõ nét đến một nửa đường */
+    transform: translateY(-40px);
+  }
+  100% {
+    opacity: 0; /* Mờ dần hoàn toàn ở cuối */
+    transform: translateY(-80px);
+  }
+}
+
+/* --- CSS CHO CAROUSEL (SLIDE) --- */
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Ẩn tất cả các slide, chỉ hiện slide có class active-slide */
+.carousel-slide {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Hiệu ứng fade nhẹ khi chuyển slide */
+  animation: fadeEffect 1s;
+}
+
+.active-slide {
+  display: block;
+}
+
+@keyframes fadeEffect {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* --- PHẦN VIDEO KỶ YẾU (ĐÃ SỬA HIỆU ỨNG KÍNH MỜ) --- */
+
+.video-section {
+  padding: 50px 0 100px 0;
+  display: flex;
+  justify-content: center; /* Căn giữa khung kính */
+  position: relative;
+  z-index: 10;
+}
+
+/* KHUNG KÍNH MỜ BAO TRỌN (VIDEO + CAPTION) */
+.video-glass-wrapper {
+  width: 90%;
+  max-width: 1000px;
+  margin: 0 auto !important;
+
+  /* Hiệu ứng kính mờ (Frost Glass) */
+  background: rgba(255, 255, 255, 0.25); /* Nền trắng đục 25% */
+  backdrop-filter: blur(3px); /* Làm mờ hậu cảnh 3px theo yêu cầu */
+  -webkit-backdrop-filter: blur(3px); /* Hỗ trợ Safari */
+
+  border: 1px solid rgba(255, 255, 255, 0.6); /* Viền kính mỏng tinh tế */
+  border-radius: 20px;
+  padding: 20px; /* Khoảng cách từ viền kính vào nội dung */
+
+  /* Bóng đổ nhẹ cho khung kính nổi lên */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+/* Sửa lại Tiêu đề cho hợp với khung kính */
+.video-glass-wrapper .section-title {
+  font-size: 1 rem !important;
+  /* font-style: italic; */
+  color: var(--primary-color);
+  margin-bottom: 25px; /* Cách video ra một chút */
+  text-shadow: 0 1px 1px rgba(208, 201, 201, 0.8); /* Giúp chữ nổi bật trên kính */
+}
+
+/* --- SỬA LỖI NÚT PLAY BỊ RỚT XUỐNG --- */
+
+/* 1. Khung chứa Video (làm mốc để nút bám vào) */
+.video-container {
+  position: relative; /* QUAN TRỌNG: Phải có dòng này */
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #482525;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.video-container video {
+  width: 100%;
+  display: block;
+}
+
+/* --- CĂN CHỈNH CHỮ TIÊU ĐỀ (KHÔNG ẢNH HƯỞNG ĐẾN ẢNH) --- */
+
+.gallery-main-title {
+  /* 1. Thoát khỏi dòng chảy Flexbox để bay tự do */
+  position: absolute !important;
+
+  /* 2. Căn vị trí */
+  top: 5% !important; /* Cách mép trên 5% (Bạn chỉnh số này để lên/xuống) */
+  left: 50% !important; /* Đặt ở giữa theo chiều ngang */
+  transform: translateX(-50%) !important; /* Căn chỉnh chính xác tâm giữa */
+
+  /* 3. Đảm bảo kích thước và độ ưu tiên */
+  width: max-content !important; /* Chiều rộng ôm sát nội dung chữ */
+  z-index: 999 !important; /* Luôn nằm đè lên trên mọi thứ */
+
+  /* 4. Trang trí giao diện (To, Đen, Rõ) */
+  font-size: 3rem !important; /* Chữ to đùng */
+  font-weight: 900 !important; /* Siêu đậm */
+  color: #000 !important; /* Màu ĐEN tuyệt đối */
+  text-align: center;
+  margin: 0;
+
+  /* Viền trắng bao quanh giúp chữ tách biệt khỏi nền/ảnh */
+  text-shadow: 3px 0px 0px #fff, -3px 0px 0px #fff, 0px 3px 0px #fff,
+    0px -3px 0px #fff;
+
+  pointer-events: none; /* Cho phép bấm xuyên qua chữ để click vào ảnh bên dưới */
+}
+
+/* Điều chỉnh riêng cho điện thoại để chữ không bị tràn màn hình */
+@media (max-width: 768px) {
+  .gallery-main-title {
+    font-size: 1.5rem !important;
+    top: 2% !important;
+    width: 90% !important; /* Trên đt thì cho rộng ra để ko bị ngắt dòng xấu */
+  }
+}
+
+/* --- SỬA LỖI BỐ CỤC: CHỮ TRÊN - ẢNH DƯỚI --- */
+
+/* --- SỬA LỖI CUỐI CÙNG: ÉP CHỮ NẰM TRÊN, ẢNH NẰM DƯỚI --- */
+
+/* 1. Xử lý dòng chữ: Hủy bỏ lệnh bay, bắt buộc đứng yên */
+#bottom-gallery .gallery-main-title {
+  font-family: "poppins-thin", serif;
+  font-weight: 600 !important;
+  font-style: italic !important;
+  position: static !important; /* QUAN TRỌNG: Hủy bỏ absolute cũ */
+  transform: none !important; /* Hủy bỏ căn chỉnh cũ */
+
+  /* Giao diện chữ */
+  text-align: center;
+  width: 100%;
+  display: block;
+  font-size: 1rem !important;
+  text-shadow: 2px 2px 0 #fff;
+  z-index: 999;
+}
+
+/* 2. Xử lý khu vực chứa ảnh: Đảm bảo nó nằm dưới chữ */
+#bottom-gallery .gallery-container {
+  position: relative;
+  width: 100%;
+  height: 60vh; /* Chiều cao khu vực ảnh */
+  margin-top: 0 !important;
+}
+
+/* 3. Đẩy các bức ảnh xuống thấp hơn nữa cho thoáng */
+#bottom-gallery .img-1 {
+  top: 15% !important; /* Hạ thấp ảnh trái */
+  left: 10% !important;
+}
+
+#bottom-gallery .img-2 {
+  top: 25% !important; /* Hạ thấp ảnh phải */
+  right: 10% !important;
+}
+
+#bottom-gallery .img-3 {
+  /* 1. TRỤC Y: Đẩy lên cao */
+  top: -5% !important; /* Số càng nhỏ thì càng lên cao. Bạn chỉnh 15% - 20% là đẹp */
+  bottom: auto !important;
+}
+
+#bottom-gallery .gallery-main-title {
+  /* 1. Thiết lập màu Gradient (Bạn chỉnh màu ở đây) */
+  /* Ví dụ: Từ Hồng đậm sang Xanh dương */
+  background: linear-gradient(to right, #557fbe, #c59eff);
+
+  /* 2. Cắt nền theo khuôn của chữ (Magic!) */
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  /* 3. Làm chữ trong suốt để lộ màu nền bên dưới */
+  -webkit-text-fill-color: transparent;
+  color: transparent; /* Fallback cho trình duyệt cũ */
+
+  /* 4. QUAN TRỌNG: Phải tắt Text-Shadow cũ đi */
+  /* Vì text-shadow sẽ đè lên gradient làm nó xấu hoặc không hiện */
+  text-shadow: none !important;
+
+  /* --- Các thông số vị trí giữ nguyên --- */
+  margin-top: -60px !important;
+  font-size: 2rem !important; /* Cho to hơn xíu nữa nhìn cho đã */
+  font-weight: 500 !important;
+  text-align: center;
+  width: 100%;
+  display: block;
+  z-index: 999;
+}
+
+/* --- FOOTER MỚI (MỎNG & NHẸ) --- */
+
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  /* 1. GIẢM CHIỀU CAO: Giảm padding từ 30px xuống 10px */
+  padding: 5px 5% !important;
+
+  background: #eee;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  position: relative;
+  z-index: 10;
+}
+
+/* 2. GIẢM ĐỘ ĐẬM CHỮ BÊN PHẢI */
+/* --- CHỮ FOOTER MÀU LINEAR GRADIENT --- */
+
+.footer-right p {
+  font-weight: 470 !important; /* Cũ là bold (700), giờ giảm xuống bình thường */
+  /* text-transform: uppercase; */
+  letter-spacing: 1px;
+  font-size: 0.8rem; /* Cho chữ bé xíu lại nhìn cho sang */
+}
+
+/* 3. GIẢM ĐỘ ĐẬM CHỮ BÊN TRÁI */
+.footer-left {
+  font-weight: 470 !important; /* Cũ là bold (700), giờ giảm xuống bình thường */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.8rem; /* Cho chữ bé xíu lại nhìn cho sang */
+}
+
+/* --- Responsive (Điện thoại) --- */
+@media (max-width: 768px) {
+  .site-footer {
+    flex-direction: column;
+    padding: 15px 5% !important; /* Trên đt cho dày hơn xíu để dễ nhìn */
+    gap: 10px;
+  }
+}
+
+/* --- KEYFRAMES CHO CHỮ CHẠY MÀU --- */
+
+@keyframes rainbow_text {
+  0% {
+    background-position: 0% 50%; /* Bắt đầu ở bên trái */
+  }
+  100% {
+    background-position: 200% 50%; /* Chạy tít sang bên phải */
+  }
+}
+
+/* --- HIỆU ỨNG 3D TILT CHO KHUNG VIDEO --- */
+
+/* 1. Tạo chiều sâu cho không gian chứa (BẮT BUỘC PHẢI CÓ) */
+.video-section {
+  perspective: 1000px; /* Tạo cảm giác xa gần, số càng nhỏ nhìn càng ảo */
+  padding: 50px 0; /* Khoảng cách trên dưới cho thoáng */
+  overflow: visible; /* Để khi nghiêng không bị cắt mất góc */
+}
+
+/* 2. Cập nhật lại khung kính (Backdrop) */
+.video-glass-wrapper {
+  max-width: 800px;
+  width: 90%;
+  margin: 0 auto;
+  padding: 30px;
+
+  /* Giao diện kính mờ */
+  background: rgba(255, 255, 255, 0.1); /* Kính trắng mờ nhẹ */
+  backdrop-filter: blur(15px); /* Độ mờ đục phía sau */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Viền sáng nhẹ */
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+  /* Chuẩn bị cho chuyển động 3D */
+  transform-style: preserve-3d;
+  transform: rotateX(0) rotateY(0); /* Vị trí ban đầu */
+
+  /* Tốc độ phản hồi: Để 0.1s cho mượt, khi thả chuột ra thì về chậm hơn */
+  transition: transform 0.1s ease-out, box-shadow 0.3s ease;
+
+  /* Quan trọng: Sửa lỗi video bị che mất nút trên một số trình duyệt */
+  z-index: 10;
+}
+
+/* 3. Hiệu ứng ánh sáng khi nghiêng (Tùy chọn cho đẹp) */
+.video-glass-wrapper:hover {
+  /* Khi nghiêng thì bóng đổ đậm hơn tạo cảm giác nổi lên */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+/* Reset lại CSS video container cho đơn giản */
+.video-container {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transform: translateZ(
+    20px
+  ); /* Đẩy video nổi lên cao hơn mặt kính 20px (3D layer) */
+}
+
+.video-container video {
+  width: 100%;
+  display: block;
+}
+
+.video-slogan {
+  font-family: "poppins-thin", serif !important; /* Font viết tay */
+  font-style: italic !important; /* In nghiêng */
+  font-weight: 300 !important; /* Mỏng lại (bỏ in đậm) */
+  text-transform: none !important; /* Bỏ viết hoa toàn bộ (để chữ thường nhìn cho mềm) */
+  font-size: 1.5rem !important; /* Kích thước vừa phải */
+  text-align: left !important;
+  padding-left: 40px !important; /* Cách lề trái 40px */
+  margin-bottom: 20px !important; /* Cách video một đoạn */
+  color: #b5b5b5 !important; /* Màu xám đen nhẹ nhàng */
+  text-shadow: none !important;
+  background: linear-gradient(to right, #557fbe, #c59eff);
+
+  /* 2. Cắt nền theo khuôn của chữ (Magic!) */
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  /* 3. Làm chữ trong suốt để lộ màu nền bên dưới */
+  -webkit-text-fill-color: transparent;
+  color: transparent; /* Fallback cho trình duyệt cũ */
+}
+
+/* --- ICON MẠNG XÃ HỘI (TỐI GIẢN & ĐỒNG BỘ MÀU) --- */
+
+/* Căn chỉnh vị trí giữa (Giữ nguyên) */
+.footer-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px; /* Khoảng cách gần hơn xíu cho gọn */
+}
+
+/* Kiểu dáng chung cho icon */
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px; /* Nhỏ lại một chút cho tinh tế */
+  height: 50px;
+  text-decoration: none;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+
+  /* --- THAY ĐỔI QUAN TRỌNG Ở ĐÂY --- */
+
+  /* 1. NỀN & VIỀN: Hoàn toàn trong suốt */
+  background: transparent !important;
+  border: none !important;
+
+  /* 2. MÀU SẮC: Đồng bộ với màu chữ Footer */
+  /* 'inherit' nghĩa là nó sẽ tự lấy màu của thẻ cha gần nhất (màu #333 của footer) */
+  color: inherit !important;
+
+  /* 3. Độ mờ nhẹ: Để nhìn nó không bị quá gắt, khi hover sẽ đậm lên */
+  opacity: 0.7;
+}
+
+/* --- Hiệu ứng khi di chuột vào (Hover) --- */
+.social-icon:hover {
+  /* Vẫn giữ nền trong suốt */
+  background: transparent !important;
+  box-shadow: none !important;
+
+  /* Khi hover thì đậm lên (Đen tuyền) và rõ nét (opacity 1) */
+  color: #000 !important;
+  opacity: 1;
+}
+
+/* --- QUAN TRỌNG: Vô hiệu hóa màu thương hiệu cũ --- */
+/* Đoạn này đảm bảo khi hover nó không bị nhảy sang màu xanh/đen của hãng nữa */
+.social-icon:hover i,
+.social-icon:hover svg,
+.social-icon:hover .fa-github,
+.social-icon:hover .fa-facebook,
+.social-icon:hover .fa-facebook-messenger {
+  color: inherit !important; /* Vẫn giữ màu chữ đang có */
+}
+
+/* --- Responsive trên điện thoại --- */
+/* Vì giờ có 3 cột (Trái - Giữa - Phải) nên trên đt phải xếp dọc lại */
+@media (max-width: 768px) {
+  .site-footer {
+    flex-direction: column; /* Xếp dọc */
+    gap: 15px;
+  }
+
+  .footer-center {
+    order: 2; /* Đẩy icon xuống giữa (dưới bản quyền, trên credits) */
+    margin: 10px 0;
+  }
+
+  .footer-right {
+    order: 3;
+  }
+}
+
+/* --- FIX LỖI HIỂN THỊ TRÊN ĐIỆN THOẠI (MOBILE) --- */
+@media (max-width: 768px) {
+  /* 1. THU GỌN KHOẢNG CÁCH CÁC KHỐI (Cho đỡ xa) */
+  .container {
+    padding-bottom: 40px !important; /* Giảm đáy */
+    top: 0 !important; /* Bỏ việc đẩy lên âm */
+  }
+
+  .section-title {
+    margin: 30px 0 20px !important; /* Tiêu đề gọn lại */
+    font-size: 1.5rem !important;
+  }
+
+  .leader-section {
+    margin-bottom: 40px !important; /* Khoảng cách tổ trưởng với tv */
+  }
+
+  .video-section {
+    padding: 40px 0 !important; /* Thu gọn khu vực video */
+  }
+
+  /* 2. CHỈNH LẠI KHU VỰC 3 ẢNH TRÊN CÙNG (HERO) */
+  .hero-wrapper {
+    height: 50vh !important; /* Chiều cao vừa đủ nửa màn hình */
+    min-height: unset !important;
+  }
+
+  /* 3. CHỈNH LẠI KHU VỰC 3 ẢNH DƯỚI CÙNG (BOTTOM GALLERY) */
+  #bottom-gallery {
+    padding-top: 20px !important;
+    padding-bottom: 60px !important;
+    height: 50vh !important; /* Giảm chiều cao xuống còn 50% màn hình */
+    min-height: unset !important;
+  }
+
+  #bottom-gallery .gallery-main-title {
+    margin-bottom: 20px !important;
+    font-size: 1.5rem !important;
+    margin-top: 0 !important;
+  }
+
+  #bottom-gallery .gallery-container {
+    height: 100% !important; /* Ăn theo chiều cao cha */
+  }
+
+  /* 4. SẮP XẾP LẠI VỊ TRÍ ẢNH (QUAN TRỌNG NHẤT) */
+  /* Quy tắc: Làm ảnh to ra và chụm lại thành hình tam giác cân đối */
+
+  .gallery-card {
+    width: 60% !important; /* Ảnh to ra (cũ là 45-55% hơi bé) */
+    border-width: 5px !important; /* Viền mỏng lại cho thanh thoát */
+  }
+
+  /* Ảnh 1: Góc Trái Trên */
+  .img-1,
+  #bottom-gallery .img-1 {
+    top: 10% !important;
+    left: -5% !important; /* Thò ra ngoài mép trái xíu cho nghệ */
+    transform: rotate(-6deg) !important;
+  }
+
+  /* Ảnh 2: Góc Phải Trên (Thấp hơn ảnh 1 chút) */
+  .img-2,
+  #bottom-gallery .img-2 {
+    top: 18% !important;
+    right: -5% !important;
+    left: auto !important;
+    transform: rotate(6deg) !important;
+  }
+
+  /* Ảnh 3: Ở Giữa Dưới (Làm tâm điểm) */
+  .img-3,
+  #bottom-gallery .img-3 {
+    top: 40% !important; /* Đẩy xuống dưới 2 ảnh kia */
+    left: center !important;
+    /* transform: translateX(-50%) rotate(-3deg) !important; Căn giữa tuyệt đối */
+    /* Reset các thuộc tính cũ có thể gây lỗi */
+    bottom: auto !important;
+    right: auto !important;
+  }
+}
